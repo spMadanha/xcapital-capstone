@@ -1,38 +1,50 @@
+# ===========================================================
+# XCapital Capstone – Render Blueprint (VALID 2025 SYNTAX)
+# ===========================================================
+
+previews:
+  generation: off
+
+# -----------------------------------------------------------
+# Database (Render Postgres)
+# -----------------------------------------------------------
 databases:
   - name: xcapital-db
-    region: oregon
     plan: free
-    postgresMajorVersion: "16"
     databaseName: xcapital
     user: xcap_user
+    region: oregon
+    ipAllowList: []   # internal only
 
+# -----------------------------------------------------------
+# Services (non-Postgres)
+# -----------------------------------------------------------
 services:
-  # ============================
-  #  API (Node server)
-  # ============================
-  - type: web
-    name: xcapital-api
-    runtime: node
+  # ---------------------------------------------------------
+  # Backend API (Docker)
+  # ---------------------------------------------------------
+  - name: xcapital-api
+    type: web
+    runtime: docker
     rootDir: server
     region: oregon
-    plan: free
-
-    buildCommand: npm install
-    # ⬅ change if your server uses a different script
-    startCommand: npm run start
+    plan: starter
+    dockerCommand: ["node", "src/server.js"]
 
     envVars:
-      - key: PORT
-        value: "4000"
-
+      # Demo mode
       - key: DEMO_RISK_MODE
         value: "true"
 
-      # Put this secret directly in the dashboard after first deploy
-      - key: JWT_SECRET
-        sync: false
+      # Default port
+      - key: PORT
+        value: "4000"
 
-      # Wire DB creds from the Render Postgres instance
+      # JWT secret — GENERATE REAL ONE LATER
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Map DB creds from Render Postgres
       - key: DB_HOST
         fromDatabase:
           name: xcapital-db
@@ -58,21 +70,17 @@ services:
           name: xcapital-db
           property: password
 
-  # ============================
-  #  Client (Vite static build)
-  # ============================
-  - type: web
-    name: xcapital-client
+
+  # ---------------------------------------------------------
+  # Frontend Client (Static Site)
+  # ---------------------------------------------------------
+  - name: xcapital-client
+    type: web
     runtime: static
     rootDir: client
-    region: oregon
-    plan: free
-
     buildCommand: npm install && npm run build
     staticPublishPath: dist
 
     envVars:
-      # After the first deploy, update this in the Render UI to the
-      # real public URL of xcapital-api (e.g. https://xcapital-api.onrender.com)
       - key: VITE_API_BASE
-        value: "https://example.com"
+        value: https://xcapital-api.onrender.com
