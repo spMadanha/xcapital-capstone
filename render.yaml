@@ -1,0 +1,81 @@
+databases:
+  - name: xcapital-db
+    region: oregon
+    plan: free
+
+services:
+  # ============================
+  # Server (Express API)
+  # ============================
+  - type: web
+    name: xcapital-server
+    env: docker
+    region: oregon
+    dockerfilePath: ./server/Dockerfile
+    envVars:
+      - key: PORT
+        value: 4000
+
+      - key: DEMO_RISK_MODE
+        value: "true"
+
+      # Direct references to Render-provisioned PostgreSQL DB
+      - key: DB_HOST
+        fromDatabase:
+          name: xcapital-db
+          property: host
+
+      - key: DB_PORT
+        fromDatabase:
+          name: xcapital-db
+          property: port
+
+      - key: DB_NAME
+        fromDatabase:
+          name: xcapital-db
+          property: database
+
+      - key: DB_USER
+        fromDatabase:
+          name: xcapital-db
+          property: user
+
+      - key: DB_PASS
+        fromDatabase:
+          name: xcapital-db
+          property: password
+
+      - key: JWT_SECRET
+        value: bb5c0ffe86efoieaufnbwafihw98fqwhfq83wfhqofq
+
+    # Server needs DB to be ready
+    dependsOn:
+      - name: xcapital-db
+        required: true
+
+  # ============================
+  # Client (Vite Static Build)
+  # ============================
+  - type: web
+    name: xcapital-client
+    env: static
+    region: oregon
+
+    buildCommand: |
+      cd client
+      npm install
+      npm run build
+
+    staticPublishPath: client/dist
+
+    # Client talking to server API
+    envVars:
+      - key: VITE_API_BASE
+        fromService:
+          name: xcapital-server
+          type: web_url
+
+    routes:
+      - type: rewrite
+        source: "/*"
+        destination: "/index.html"
