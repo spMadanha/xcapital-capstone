@@ -2,51 +2,77 @@ databases:
   - name: xcapital-db
     region: oregon
     plan: free
+    postgresMajorVersion: "16"
     databaseName: xcapital
     user: xcap_user
 
 services:
-  # ===========================
-  # SERVER (Node.js API)
-  # ===========================
+  # ============================
+  #  API (Node server)
+  # ============================
   - type: web
-    name: xcapital-server
-    env: node
+    name: xcapital-api
+    runtime: node
+    rootDir: server
     region: oregon
-    buildCommand: cd server && npm install
-    startCommand: cd server && npm start
+    plan: free
+
+    buildCommand: npm install
+    # ⬅ change if your server uses a different script
+    startCommand: npm run start
+
     envVars:
       - key: PORT
-        value: 4000
+        value: "4000"
+
       - key: DEMO_RISK_MODE
         value: "true"
+
+      # Put this secret directly in the dashboard after first deploy
+      - key: JWT_SECRET
+        sync: false
+
+      # Wire DB creds from the Render Postgres instance
       - key: DB_HOST
         fromDatabase:
           name: xcapital-db
           property: host
+
       - key: DB_PORT
-        value: "5432"
+        fromDatabase:
+          name: xcapital-db
+          property: port
+
       - key: DB_NAME
-        value: xcapital
+        fromDatabase:
+          name: xcapital-db
+          property: database
+
       - key: DB_USER
         fromDatabase:
           name: xcapital-db
           property: user
+
       - key: DB_PASS
         fromDatabase:
           name: xcapital-db
           property: password
-      - key: JWT_SECRET
-        value: "super-secret-demo-value"
 
-  # ===========================
-  # CLIENT (Vite Static Build)
-  # ===========================
-  - type: static
+  # ============================
+  #  Client (Vite static build)
+  # ============================
+  - type: web
     name: xcapital-client
+    runtime: static
+    rootDir: client
     region: oregon
-    buildCommand: cd client && npm install && npm run build
-    staticPublishPath: client/dist
+    plan: free
+
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+
     envVars:
+      # After the first deploy, update this in the Render UI to the
+      # real public URL of xcapital-api (e.g. https://xcapital-api.onrender.com)
       - key: VITE_API_BASE
-        value: https://xcapital-server.onrender.com
+        value: "https://example.com"
