@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: xcap-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: xcapital
+      POSTGRES_USER: xcap_user
+      POSTGRES_PASSWORD: xcap_pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  server:
+    build: ./server
+    container_name: xcap-server
+    env_file:
+      - ./server/.env
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=xcapital
+      - DB_USER=xcap_user
+      - DB_PASS=xcap_pass
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  client:
+    build: ./client
+    container_name: xcap-client
+    environment:
+      - VITE_API_BASE=http://localhost:4000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  pgdata:

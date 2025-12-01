@@ -1,0 +1,21 @@
+{
+  "name": "xcapital-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-config-service": "^3.919.0",
+    "@aws-sdk/client-securityhub": "^3.676.0",
+    "axios": "^1.7.4",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "pdfkit": "^0.13.0",
+    "pg": "^8.16.3"
+  }
+}
