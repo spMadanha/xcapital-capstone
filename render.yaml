@@ -2,80 +2,51 @@ databases:
   - name: xcapital-db
     region: oregon
     plan: free
+    databaseName: xcapital
+    user: xcap_user
 
 services:
-  # ============================
-  # Server (Express API)
-  # ============================
+  # ===========================
+  # SERVER (Node.js API)
+  # ===========================
   - type: web
     name: xcapital-server
-    env: docker
+    env: node
     region: oregon
-    dockerfilePath: ./server/Dockerfile
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
     envVars:
       - key: PORT
         value: 4000
-
       - key: DEMO_RISK_MODE
         value: "true"
-
-      # Direct references to Render-provisioned PostgreSQL DB
       - key: DB_HOST
         fromDatabase:
           name: xcapital-db
           property: host
-
       - key: DB_PORT
-        fromDatabase:
-          name: xcapital-db
-          property: port
-
+        value: "5432"
       - key: DB_NAME
-        fromDatabase:
-          name: xcapital-db
-          property: database
-
+        value: xcapital
       - key: DB_USER
         fromDatabase:
           name: xcapital-db
           property: user
-
       - key: DB_PASS
         fromDatabase:
           name: xcapital-db
           property: password
-
       - key: JWT_SECRET
-        value: bb5c0ffe86efoieaufnbwafihw98fqwhfq83wfhqofq
+        value: "super-secret-demo-value"
 
-    # Server needs DB to be ready
-    dependsOn:
-      - name: xcapital-db
-        required: true
-
-  # ============================
-  # Client (Vite Static Build)
-  # ============================
-  - type: web
+  # ===========================
+  # CLIENT (Vite Static Build)
+  # ===========================
+  - type: static
     name: xcapital-client
-    env: static
     region: oregon
-
-    buildCommand: |
-      cd client
-      npm install
-      npm run build
-
+    buildCommand: cd client && npm install && npm run build
     staticPublishPath: client/dist
-
-    # Client talking to server API
     envVars:
       - key: VITE_API_BASE
-        fromService:
-          name: xcapital-server
-          type: web_url
-
-    routes:
-      - type: rewrite
-        source: "/*"
-        destination: "/index.html"
+        value: https://xcapital-server.onrender.com
