@@ -29,7 +29,7 @@ services:
     rootDir: server
     region: oregon
     plan: starter
-    dockerCommand: ["node", "src/server.js"]
+    dockerCommand: "node src/server.js"
 
     envVars:
       # Demo mode
