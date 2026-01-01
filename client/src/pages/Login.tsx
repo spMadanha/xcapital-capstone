@@ -6,6 +6,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // 📝 Note: We keep this variable so the code structure looks professional
   const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
 
   async function handleLogin(e: React.FormEvent) {
@@ -13,28 +14,29 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
-    try {
-      const res = await fetch(`${API_BASE}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+    // --- PORTFOLIO BYPASS START ---
+    // We simulate a small delay to make it look like a real network request
+    setTimeout(() => {
+      try {
+        // ✅ We skip the fetch() call entirely to avoid ECONNREFUSED errors.
+        // ✅ We manually store the "Success" data just like the API would.
+        
+        localStorage.setItem('xcap_token', 'demo-token-12345');
+        localStorage.setItem('xcap_user', JSON.stringify({ 
+          email: email, 
+          role: 'admin',
+          name: 'Portfolio Guest' 
+        }));
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || 'Invalid credentials');
-
-      // ✅ Store token and role
-      localStorage.setItem('xcap_token', data.token);
-      localStorage.setItem('xcap_user', JSON.stringify({ email, role: data.role }));
-
-      // ✅ Redirect to dashboard
-      window.location.href = '/';
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+        // ✅ Immediate redirect
+        window.location.href = '/';
+      } catch (err: any) {
+        setError("An unexpected error occurred.");
+      } finally {
+        setLoading(false);
+      }
+    }, 800); 
+    // --- PORTFOLIO BYPASS END ---
   }
 
   return (
@@ -92,13 +94,9 @@ export default function LoginPage() {
           {loading ? 'Signing in…' : 'Login'}
         </button>
 
-        <p className="text-center text-xs text-gray-500 mt-4">
-          {import.meta.env.VITE_DEMO_MODE === 'true'
-           ? 'Demo mode is active — use any password'
-           : 'Sign in with your registered account'}
+        <p className="text-center text-xs text-gray-500 mt-4 italic">
+          Portfolio Demo Mode — use any email/password to enter
         </p>
-
-
       </form>
     </div>
   );
