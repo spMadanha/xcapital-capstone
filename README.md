@@ -2,51 +2,51 @@ XCapital: Continuous Compliance & Audit Monitoring
 
 NB: This is Part B, which is the final part of my capstone: "Continuous Compliance and Audit Monitoring for Cloud IAM: Policy-as-Code to Mitigate Identity Risk in Multi-Cloud for Hedge Funds." 
 
-See Part A here, which focuses on seeding the misconfigurations and using Policy-as-Code to define AWS Config, Azure Policy, and the underlying cloud infrastructure. 
-+1
+Part A focuses on seeding the misconfigurations and using Policy-as-Code to define AWS Config, Azure Policy, and the underlying cloud infrastructure. 
+
 
 
 XCapital is a multi-cloud GRC (Governance, Risk, and Compliance) platform designed specifically for the high-stakes environment of hedge funds. It addresses the critical challenge of identity-related security breaches and compliance failures by implementing a Policy-as-Code approach to monitor AWS and Azure IAM configurations in real-time. 
-+4
+
 
 🚀 Key Features
 
 Single Pane of Glass: A unified dashboard providing centralized visibility into security posture across AWS and Azure environments. 
-+1
+
 
 
 Policy-as-Code Enforcement: Automated guardrails utilizing AWS Config rules and Azure Policy definitions to detect IAM violations, such as missing MFA or open storage buckets. 
-+2
+
 
 
 GRC Integration: Seamlessly synchronizes technical cloud findings with SimpleRisk via API, translating security alerts into trackable, managed risks. 
-+2
+
 
 
 Audit-Ready Monitoring: Continuous tracking and logging of identity risks to ensure alignment with frameworks like SOX, ISO 27001, and NIST 800-53. 
-+2
+
 
 
 Role-Based Access Control (RBAC): Secure administration with a managed user system and protected routes for authorized personnel. 
-+1
+
 
 🏗️ Technical Architecture
 The system utilizes a full-stack architecture to bridge technical cloud compliance with business risk governance: 
-+1
+
 
 
 Frontend: React (Vite) with Recharts for dynamic data visualization, trend analysis, and risk heatmaps. 
-+2
+
 
 
 Backend: Node.js (Express) serving as the data consolidation point for Cloud SDKs and the SimpleRisk API. 
-+2
+
 
 Database: PostgreSQL for persistent storage of system users and compliance metadata.
 
 
 Infrastructure (Part A): Terraform (IaC) used to provision baseline resources and seed intentional IAM misconfigurations for testing. 
-+1
+
 
 🛠️ Installation & Setup
 1. Clone the Repository
