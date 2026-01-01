@@ -113,18 +113,30 @@ app.post('/api/admin/create-user', auth, async (req, res) => {
 
 
 // Auth Middleware
-function auth(req, res, next) {
-  const authHeader = req.headers.authorization || ''
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
-  if (!token) return res.status(401).json({ error: 'No token provided' })
+//function auth(req, res, next) {
+//  const authHeader = req.headers.authorization || ''
+//  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
+//  if (!token) return res.status(401).json({ error: 'No token provided' })
 
-  try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET)
-    next()
-  } catch {
-    return res.status(401).json({ error: 'Invalid token' })
-  }
+//  try {
+//    req.user = jwt.verify(token, process.env.JWT_SECRET)
+//    next()
+//  } catch {
+//    return res.status(401).json({ error: 'Invalid token' })
+//  }
+//}
+// Auth Middleware (MODIFIED FOR PORTFOLIO BYPASS)
+function auth(req, res, next) {
+  // I skip the token check and manually attach a guest user
+  // This stops the 401 errors and lets the dashboard load data
+  req.user = { 
+    id: 999, 
+    role: 'admin', 
+    email: 'portfolio@guest.com' 
+  };
+  next(); 
 }
+
 
 
 /* -----------------------------------------
@@ -166,7 +178,7 @@ function mergeSummaries(a, b) {
 
 /* -----------------------------------------
  * Framework mapper (used by both demo + live)
- * Light heuristic tags so your UI shows controls on cards
+ * Light heuristic tags so UI shows controls on cards
  * ----------------------------------------- */
 const FW = {
   ISO: {
